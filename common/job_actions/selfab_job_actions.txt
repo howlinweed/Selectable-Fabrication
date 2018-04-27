@@ -1,0 +1,66 @@
+##########################################
+# COUNCILLOR ACTIONS
+##########################################
+# attribute = [diplomacy/stewardship/intrigue/martial/learning] - Character attribute is multiplied with the modifiers
+# trigger = Province scope trigger to determine if the action is meaningful in a province (the player character is FROM, the councillor is in 'new_character')
+# Events that can trigger off this action. This info is only used by the GUI.
+# All modifiers (like 'local_build_time_modifier') are multiplied by the attribute
+
+# display_on_map = {
+#	tooltip = JOB_PROSELYTIZE_DIFFERENT_RELIGION  # Key of the loc to add to the tooltip
+#	trigger = {                                   # Trigger for when this should happen. Same scopes as the allow/potential for the job action itself
+#		NOT = { religion = FROM }
+#	}
+#	color = { 255 0 0 }                           # What color to use on the map
+# }
+
+
+# Chancellor
+action_fabricate_claims = {
+	attribute = diplomacy
+	
+	potential = {
+		FROM = { is_nomadic = no }
+	}
+	
+	trigger = {
+		new_character = {
+			ROOT = {
+				OR = {
+					AND = {
+						FROM = { ai = yes }
+						any_province_lord = {
+							NOR = {
+								character = FROM
+								character = PREVPREV # Can't be sent to frabricate claims against themself... or can they?
+							}
+							is_within_diplo_range = FROM
+						}
+					}
+					AND = {
+						FROM = { ai = no }
+						any_province_lord = {
+							NOR = {
+								character = FROM
+								character = PREVPREV # Can't be sent to frabricate claims against themself... or can they?
+							}
+							is_within_diplo_range = FROM
+							any_demesne_title = {
+								has_title_flag = flag_fabricate_this_title_@PREVPREVPREV
+								ROOT = {
+									OR = {
+										county = { title = PREVPREV }
+										duchy = { title = PREVPREV}
+										kingdom = { title = PREVPREV}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	events = { 913 914 }
+}

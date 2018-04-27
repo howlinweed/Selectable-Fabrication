@@ -1,0 +1,802 @@
+##############################
+# CHANCELLOR
+#
+# Job: action_fabricate_claims
+# 	913: The Chancellor fabricates a claim for his liege on a local landed noble
+# 	914: A Noble finds out what the Chancellor is up to (trying to fabricate claims)
+#
+##############################
+
+##############################
+# CHANCELLOR
+# JOB: action_fabricate_claims
+##############################
+
+# 913: The Chancellor fabricates a claim for his liege on a landed noble's title
+character_event = {
+	id = 913
+	title = EVTNAME913
+	desc = EVTDESC913
+	picture = GFX_evt_council
+	border = GFX_event_normal_frame_diplomacy
+
+	min_age = 16
+	capable_only = yes
+	prisoner = no
+	
+	trigger = {
+		has_job_action = action_fabricate_claims
+		NOT = { has_character_modifier = in_seclusion }
+		NOT = { has_character_modifier = bribed_by_noble_timer }
+		independent = no
+		liege = {
+			ROOT = {
+				location = {
+					OR = {
+						county = {
+							OR = {
+								ai = yes
+								AND = {
+									has_title_flag = flag_fabricate_this_title_@ROOT
+									ROOT = { liege = { ai = no } }
+								}
+							}
+							NOT = { claimed_by = PREVPREVPREV }
+							holder_scope = {
+								NOT = { is_liege_of = ROOT }
+								NOT = { character = ROOT }
+								NOT = {
+									AND = {
+										religion = catholic
+										ROOT = { liege = { religion_head = { character = PREVPREVPREV } } }
+									}
+								}
+							}
+						}
+						AND = {
+							duchy = {
+								NOT = { claimed_by = PREVPREVPREV }
+								holder_scope = {
+									NOT = { is_liege_of = ROOT }
+									NOT = { character = ROOT }
+									NOT = {
+										AND = {
+											religion = catholic
+											ROOT = { liege = { religion_head = { character = PREVPREVPREV } } }
+										}
+									}
+								}
+							}
+							ROOT = {
+								OR = {
+									AND = {
+										location = { duchy = { has_title_flag = flag_fabricate_this_title_@ROOT } }
+										liege = { ai = no }
+									}
+									diplomacy = 15
+								}
+							}
+						}
+						AND = {
+							ROOT = {
+								liege = { 
+									OR = {
+										AND = {
+											has_ambition = obj_become_king
+											NOT = { has_character_flag = kingdom_claimed_with_ambition }
+										}
+										AND = {
+											ai = no
+											ROOT = { location = { kindom = { has_title_flag = flag_fabricate_this_title_@ROOT } } }
+										}
+									}
+								}
+							}
+							kingdom = {
+								NOT = { claimed_by = PREVPREVPREV }
+								holder_scope = {
+									NOT = { is_liege_of = ROOT }
+									NOT = { character = ROOT }
+									NOT = {
+										AND = {
+											religion = catholic
+											ROOT = { liege = { religion_head = { character = PREVPREVPREV } } }
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 360
+		
+		modifier = {
+			factor = 1.25
+			NOT = { diplomacy = 2 }
+		}
+		modifier = {
+			factor = 1.25
+			NOT = { diplomacy = 3 }
+		}
+		modifier = {
+			factor = 1.25
+			NOT = { diplomacy = 4 }
+		}
+		modifier = {
+			factor = 1.25
+			NOT = { diplomacy = 5 }
+		}
+		modifier = {
+			factor = 0.75
+			diplomacy = 10
+		}
+		modifier = {
+			factor = 0.75
+			diplomacy = 11
+		}
+		modifier = {
+			factor = 0.75
+			diplomacy = 12
+		}
+		modifier = {
+			factor = 0.75
+			diplomacy = 13
+		}
+		modifier = {
+			factor = 0.75
+			diplomacy = 14
+		}
+		modifier = {
+			factor = 0.95
+			diplomacy = 15
+		}
+		modifier = {
+			factor = 0.95
+			diplomacy = 16
+		}
+		modifier = {
+			factor = 0.95
+			diplomacy = 17
+		}
+		modifier = {
+			factor = 0.95
+			diplomacy = 18
+		}
+		modifier = {
+			factor = 0.95
+			diplomacy = 19
+		}
+		modifier = {
+			factor = 0.95
+			diplomacy = 20
+		}
+		modifier = {
+			factor = 0.85
+			liege = { ai = no }
+			location = {
+				county = { has_title_flag = flag_fabricate_this_title_@ROOT }
+			}
+		}
+		modifier = {
+			factor = 1.10
+			location = {
+				duchy = { has_title_flag = flag_fabricate_this_title_@ROOT }
+			}
+		}
+		modifier = {
+			factor = 1.5
+			location = {
+				kingdom = { has_title_flag = flag_fabricate_this_title_@ROOT }
+			}
+		}
+	}
+	
+	option = {
+		name = "EVTOPTA913"
+		hidden_tooltip = {
+			if = {
+				limit = {
+					liege = { ai = no }
+					location = {
+						OR = {
+							county = { has_title_flag = flag_fabricate_this_title_@ROOT }
+							duchy = { has_title_flag = flag_fabricate_this_title_@ROOT }
+							kingdom = { has_title_flag = flag_fabricate_this_title_@ROOT }
+						}
+					}
+				}
+				clr_character_flag = flag_claimed_selfab
+				liege = {
+					ROOT = {
+						location = {
+							if = {
+								limit = {
+									kingdom = {
+										has_title_flag = flag_fabricate_this_title_@ROOT
+										NOT = { claimed_by = PREVPREVPREV }
+										holder_scope = {
+											NOT = { character = ROOT }
+											owns = PREVPREV
+										}
+									}
+								}
+								ROOT = { set_character_flag = flag_claimed_selfab }
+								kingdom = {
+									clr_title_flag = flag_fabricate_this_title_@ROOT
+									holder_scope = {
+										set_character_flag = kingdom_claimed
+										character_event = { id = 20130 days = 1 }
+									}
+								}
+							}
+							else_if = {
+								limit = {
+									duchy = {
+										has_title_flag = flag_fabricate_this_title_@ROOT
+										NOT = { claimed_by = PREVPREVPREV }
+										holder_scope = {
+											NOR = {
+												character = ROOT
+												is_liege_of = ROOT
+											}
+											owns = PREVPREV
+										}
+									}
+								}
+								ROOT = {
+									set_character_flag = flag_claimed_selfab
+									set_character_flag = claim_done
+								}
+								duchy = {
+									clr_title_flag = flag_fabricate_this_title_@ROOT
+									holder_scope = {
+										set_character_flag = duchy_claimed
+										character_event = { id = 20130 days = 1 }
+									}
+								}
+							}
+							else_if = {
+								limit = {
+									county = {
+										has_title_flag = flag_fabricate_this_title_@ROOT
+										NOT = { claimed_by = PREVPREVPREV }
+										holder_scope = {
+											NOT = { character = ROOT }
+											owns = PREVPREV
+										}
+									}
+								}
+								ROOT = { set_character_flag = flag_claimed_selfab }
+								county = {
+									clr_title_flag = flag_fabricate_this_title_@ROOT
+									holder_scope = {
+										character_event = { id = 20130 days = 1 }
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			if = {
+				limit = { NOT = { has_character_flag = flag_claimed_selfab } }
+				# Try to claim Kingdom title - only available with Become King ambition
+				if = {
+					limit = {
+						diplomacy = 22
+						liege = {
+							has_ambition = obj_become_king
+							NOT = { has_character_flag = kingdom_claimed_with_ambition }
+							ROOT = {
+								location = {
+									kingdom = {
+										NOT = { claimed_by = PREVPREVPREV }
+										holder_scope = {
+											NOT = { character = ROOT }
+											owns = PREVPREV
+										}
+									}
+								}
+							}
+						}
+					}
+					random = {
+						chance = 20
+						location = {
+							kingdom = {
+								holder_scope = {
+									set_character_flag = kingdom_claimed
+									character_event = { id = 20130 days = 1 }
+								}
+							}
+						}
+						liege = { set_character_flag = kingdom_claimed_with_ambition }
+						set_character_flag = claim_done
+						break = yes
+					}
+				}
+				if = {
+					limit = {
+						diplomacy = 18
+						NOT = { diplomacy = 22 }
+						liege = {
+							has_ambition = obj_become_king
+							NOT = { has_character_flag = kingdom_claimed_with_ambition }
+							ROOT = {
+								location = {
+									kingdom = {
+										NOT = { claimed_by = PREVPREVPREV }
+										holder_scope = {
+											NOT = { character = ROOT }
+											owns = PREVPREV
+										}
+									}
+								}
+							}
+						}
+					}
+					random = {
+						chance = 10
+						location = {
+							kingdom = {
+								holder_scope = {
+									set_character_flag = kingdom_claimed
+									character_event = { id = 20130 days = 1 }
+								}
+							}
+						}
+						liege = { set_character_flag = kingdom_claimed_with_ambition }
+						set_character_flag = claim_done
+						break = yes
+					}
+				}
+				if = {
+					limit = {
+						diplomacy = 15
+						NOT = { diplomacy = 18 }
+						liege = {
+							has_ambition = obj_become_king
+							NOT = { has_character_flag = kingdom_claimed_with_ambition }
+							ROOT = {
+								location = {
+									kingdom = {
+										NOT = { claimed_by = PREVPREVPREV }
+										holder_scope = {
+											NOT = { character = ROOT }
+											owns = PREVPREV
+										}
+									}
+								}
+							}
+						}
+					}
+					random = {
+						chance = 5
+						location = {
+							kingdom = {
+								holder_scope = {
+									set_character_flag = kingdom_claimed
+									character_event = { id = 20130 days = 1 }
+								}
+							}
+						}
+						liege = { set_character_flag = kingdom_claimed_with_ambition }
+						set_character_flag = claim_done
+						break = yes
+					}
+				}
+				if = {
+					limit = {
+						NOT = { diplomacy = 15 }
+						liege = {
+							has_ambition = obj_become_king
+							NOT = { has_character_flag = kingdom_claimed_with_ambition }
+							ROOT = {
+								location = {
+									kingdom = {
+										NOT = { claimed_by = PREVPREVPREV }
+										holder_scope = {
+											NOT = { character = ROOT }
+											owns = PREVPREV
+										}
+									}
+								}
+							}
+						}
+					}
+					random = {
+						chance = 2
+						location = {
+							kingdom = {
+								holder_scope = {
+									set_character_flag = kingdom_claimed
+									character_event = { id = 20130 days = 1 }
+								}
+							}
+						}
+						set_character_flag = claim_done
+						break = yes
+					}
+				}
+				if = {
+					limit = {
+						diplomacy = 15
+						NOT = { diplomacy = 18 }
+						liege = {
+							ROOT = {
+								location = {
+									duchy = {
+										NOT = { claimed_by = PREVPREVPREV }
+										holder_scope = {
+											NOT = { is_liege_of = ROOT }
+											NOT = { character = ROOT }
+											owns = PREVPREV
+										}
+									}
+								}
+							}
+						}
+					}
+					random = {
+						chance = 10
+						location = {
+							duchy = {
+								holder_scope = {
+									set_character_flag = duchy_claimed
+									character_event = { id = 20130 days = 1 }
+								}
+							}
+						}
+						set_character_flag = claim_done
+					}
+				}
+				if = {
+					limit = {
+						diplomacy = 18
+						NOT = { diplomacy = 20 }
+						liege = {
+							ROOT = {
+								location = {
+									duchy = {
+										NOT = { claimed_by = PREVPREVPREV }
+										holder_scope = {
+											NOT = { is_liege_of = ROOT }
+											NOT = { character = ROOT }
+											owns = PREVPREV
+										}
+									}
+								}
+							}
+						}
+					}
+					random = {
+						chance = 20
+						location = {
+							duchy = {
+								holder_scope = {
+									set_character_flag = duchy_claimed
+									character_event = { id = 20130 days = 1 }
+								}
+							}
+						}
+						set_character_flag = claim_done
+					}
+				}
+				if = {
+					limit = {
+						diplomacy = 20
+						liege = {
+							ROOT = {
+								location = {
+									duchy = {
+										NOT = { claimed_by = PREVPREVPREV }
+										holder_scope = {
+											NOT = { is_liege_of = ROOT }
+											NOT = { character = ROOT }
+											owns = PREVPREV
+										}
+									}
+								}
+							}
+						}
+					}
+					random = {
+						chance = 30
+						location = {
+							duchy = {
+								holder_scope = {
+									set_character_flag = duchy_claimed
+									character_event = { id = 20130 days = 1 }
+								}
+							}
+						}
+						set_character_flag = claim_done
+					}
+				}			
+				# Try to claim county title
+				if = {
+					limit = {
+						NOT = { has_character_flag = claim_done }
+						liege = {
+							ROOT = {
+								location = {
+									county = {
+										NOT = { claimed_by = PREVPREVPREV }
+										holder_scope = {
+											NOT = { is_liege_of = ROOT }
+											NOT = { character = ROOT }
+											owns = PREVPREV
+										}
+									}
+								}
+							}
+						}
+					}
+					location = {
+						county = {
+							holder_scope = {
+								character_event = { id = 20130 days = 1 }
+							}
+						}
+					}
+				}
+				clr_character_flag = claim_done
+			}
+		}
+	}
+}
+
+# 20134: The liege is informed and has a choice to press the claim or not
+letter_event = {
+	id = 20134
+	desc = "EVTDESC20134"
+	border = GFX_event_letter_frame_diplomacy
+	
+	show_from_from = yes
+	
+	is_triggered_only = yes
+	
+	trigger = {
+		FROM = {
+			FROM = {
+				has_job_action = action_fabricate_claims
+				location = {
+					kingdom = {
+						NOT = { claimed_by = ROOT }
+					}
+				}
+			}
+		}
+	}
+
+	option = {	# Emperor or King
+		name = "EVTOPTA20131" #Press the Claim
+		trigger = {
+			ai = no
+			primary_title = { higher_tier_than = DUKE }
+		}
+		ai_chance = {
+			factor = 0
+		}
+		scaled_wealth = -2.5
+		prestige = -300
+		FROM = {
+			FROM = {
+				location = {
+					kingdom = {
+						add_claim = ROOT
+					}
+				}
+			}
+		}
+		FROM = {
+			opinion = {
+				modifier = opinion_furious
+				who = ROOT
+				years = 20
+			}
+			hidden_tooltip = {
+				character_event = { id = 20132 days = 7 }
+			}
+		}
+	}
+	option = {	# Duke
+		name = "EVTOPTA20131" #Press the Claim
+		trigger = { primary_title = { tier = DUKE } }
+		ai_chance = {
+			factor = 90
+			modifier = {
+				factor = 0
+				NOT = { scaled_wealth = 2.25 }
+			}
+		}
+		scaled_wealth = -2.0
+		prestige = -200
+		FROM = {
+			FROM = {
+				location = {
+					kingdom = {
+						add_claim = ROOT
+					}
+				}
+			}
+		}
+		FROM = {
+			opinion = {
+				modifier = opinion_furious
+				who = ROOT
+				years = 20
+			}
+			hidden_tooltip = {
+				character_event = { id = 20132 days = 7 }
+			}
+		}
+	}
+	option = {	# Count
+		name = "EVTOPTA20131" #Press the Claim
+		trigger = { primary_title = { tier = COUNT } }
+		ai_chance = {
+			factor = 90
+			modifier = {
+				factor = 0
+				NOT = { scaled_wealth = 2.25 }
+			}
+		}
+		scaled_wealth = -2.0
+		prestige = -100
+		FROM = {
+			FROM = {
+				location = {
+					kingdom = {
+						add_claim = ROOT
+					}
+				}
+			}
+		}
+		FROM = {
+			opinion = {
+				modifier = opinion_furious
+				who = ROOT
+				years = 20
+			}
+			hidden_tooltip = {
+				character_event = { id = 20132 days = 7 }
+			}
+		}
+	}
+	option = {
+		name = "EVTOPTB20131" #Let it go
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 0
+				scaled_wealth = 2.25
+			}
+		}
+		piety = 20
+	}
+}
+
+# 914: A Noble finds out that the Chancellor is trying to fabricate claims
+character_event = {
+	id = 914
+	title = "EVTNAME914"
+	desc = "EVTDESC914"
+	picture = GFX_evt_emissary
+	border = GFX_event_normal_frame_diplomacy
+	
+	min_age = 16
+	capable_only = yes
+	prisoner = no
+	
+	trigger = {
+		has_job_action = action_fabricate_claims
+		NOT = { has_character_modifier = in_seclusion }
+		NOT = { has_character_modifier = bribed_by_noble_timer }
+		location = {
+			owner = {
+				NOT = { is_liege_of = ROOT }
+				NOT = { character = ROOT }
+			}
+		}
+	}
+	
+	mean_time_to_happen = {
+		months = 240
+		
+		modifier = {
+			factor = 0.75
+			NOT = { diplomacy = 2 }
+		}
+		modifier = {
+			factor = 0.75
+			NOT = { diplomacy = 3 }
+		}
+		modifier = {
+			factor = 0.75
+			NOT = { diplomacy = 4 }
+		}
+		modifier = {
+			factor = 0.75
+			NOT = { diplomacy = 5 }
+		}
+		modifier = {
+			factor = 1.25
+			diplomacy = 10
+		}
+		modifier = {
+			factor = 1.25
+			diplomacy = 11
+		}
+		modifier = {
+			factor = 1.25
+			diplomacy = 12
+		}
+		modifier = {
+			factor = 1.25
+			diplomacy = 13
+		}
+		modifier = {
+			factor = 0.90
+			liege = {
+			location = {
+				OR = {
+					duchy = { has_title_flag = flag_fabricate_this_title_@ROOT }
+					kingdom = { has_title_flag = flag_fabricate_this_title_@ROOT }
+				}
+			}
+			}
+		}
+		modifier = {
+			factor = 0.90
+			liege = { ai = no }
+			location = {
+				kingdom = { has_title_flag = flag_fabricate_this_title_@ROOT }
+			}
+		}
+	}
+	
+	option = {
+		name = "EVTOPTA914"
+		location = {
+			county = {
+				holder_scope = {
+					character_event = { id = 20140 days = 7 tooltip = "EVTTOOLTIP20140" }
+				}
+			}
+		}
+	}
+}
+
+namespace = selfab
+
+character_event = { # Ping to chancellor to get scoping correct, I guess
+	id = selfab.10
+	is_triggered_only = yes # fired by claim_this_title decision
+	hide_window = yes
+	
+	# Stack after claim_this_title
+	# Root = chancellor
+	# From - Title to fabricate claims for
+	# FromFrom - liege/decision taker
+	
+	trigger = {
+		FROM = {
+			 holder_scope = { NOT = { character = ROOT } }
+		}
+		is_liege_or_above = FROMFROM
+		has_job_title = job_chancellor
+	}
+	
+	option = {
+		FROM = {
+			set_title_flag = flag_fabricate_this_title_@ROOT
+		}
+	}
+}
+

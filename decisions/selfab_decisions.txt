@@ -1,0 +1,65 @@
+# Targetted decisions are possible vs _all_ other characters and shown are in the Diplomacy View, not the Intrigue View. The taker is in the FROM scope.
+#
+# filter = [capital/primary_title/owned/vassal_owned/sub_realm/realm_owned/dynasty_owned/all] (the other filter types can be set to lessen CPU load)
+# ai_target_filter = [capital/primary_title/owned/vassal_owned/sub_realm/realm_owned/dynasty_owned/all] (which titles for which the AI evaluates the decision.)
+#	capital: decision taker's capital
+#	primary_title
+#	owned: all titles owned by the character
+#	vassal_owned: all titles owned by direct vassal rulers of the character's employer
+#	sub_realm_owned: all titles below the character's employer
+#	realm_owned: all titles in the same top realm as the character
+#	dynasty_owned: all titles owned by members of the same dynasty
+#	all: all titles (to be avoided, very CPU heavy!)
+#
+
+title_decisions = {
+	
+	claim_this_title = {
+		filter = all
+		ai_filter = capital
+		ai = no
+		# FROM: decision taker (player)
+		# ROOT: targeted title
+		from_potential = {
+			ai = no
+			is_nomadic = no
+		}
+		
+		potential = {
+			NOT = { is_landless_type_title = yes }
+			owner = {
+				FROM = {
+					NOT = { character = PREV }
+					job_chancellor = {
+						NOT = { character = PREVPREV }
+						ROOT = { NOT = { has_title_flag = flag_fabricate_this_title_@PREV } }
+					}
+				}
+			}
+		}
+		
+		allow = {
+			owner = {
+				FROM = {
+					NOT = { character = PREV }
+					job_chancellor = {
+						NOT = { character = PREVPREV }
+						ROOT = { NOT = { has_title_flag = flag_fabricate_this_title_@PREV } }
+					}
+				}
+			}
+			higher_tier_than = baron
+		}
+		
+		effect = {
+			hidden_tooltip = {
+				job_chancellor = { character_event = { id = selfab.10 } }
+			}
+		}
+		
+		ai_will_do = {
+			factor = 0
+		}
+	}
+	
+}
